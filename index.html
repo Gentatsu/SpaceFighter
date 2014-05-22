@@ -12,7 +12,9 @@
 
 <script>
 var canvas, stage, exportRoot;
-var score, inPlay, scoreMod, meteors = [], speed, bullets = [], turning=0, randTurn = Math.floor((Math.random() * 1000) + 1), direction =1;
+var score, inPlay, scoreMod, meteors = [], speed, bullets = [], turning=0, randTurn = Math.floor((Math.random() * 10000) + 1), direction =1;
+var shield, time, power, powerMove, powerUp;
+var hero;
 const screenX = 1024;
 //Background image from - http://webtreats.mysitemyway.com/tileable-classic-nebula-space-patterns/
 function init() {
@@ -35,23 +37,22 @@ function handleComplete() {
 	stage = new createjs.Stage(canvas);
 	stage.addChild(exportRoot);
 	stage.update();
-
+  hero = exportRoot.hero;
+  hero.rad = 38;
 	createjs.Ticker.setFPS(lib.properties.fps);
 	createjs.Ticker.addEventListener("tick", tick);
-	endX = exportRoot.hero.x; 
-  endY = exportRoot.hero.y; 
+	endX = hero.x; 
+  endY = hero.y; 
   stage.addEventListener("stagemousemove", moveHero);
   canvas.addEventListener("click", mouseDown);
   //exportRoot.playButton.addEventListener("click", playClicked);
   exportRoot.gameOver.visible = false; 
   exportRoot.bullet.visible = false;
-  exportRoot.power.visible = false;
   exportRoot.meteor1.visible = false;
   exportRoot.meteor2.visible = false;
   exportRoot.meteor3.visible = false;
   resetGame();
   inPlay = true;
-  //exportRoot.hero.rotation -=180;
 }
 
 function moveHero(evt)
@@ -64,24 +65,25 @@ function tick(event)
 { 
   if (inPlay)
   {
-    exportRoot.hero.x -= (exportRoot.hero.x - endX)/6; 
-    exportRoot.hero.y -= (exportRoot.hero.y - endY)/6; 
+    hero.x -= (hero.x - endX)/6; 
+    hero.y -= (hero.y - endY)/6; 
     score ++;
     exportRoot.score.text = Math.floor  (score / 10); 
     addMeteors();
     moveMeteors();
     moveBullets();
+    powerUps();
     checkBulletsMeteors();
     //inPlay = false;
-    if (randTurn < 0)
+    if (randTurn < 0 && turning <= 0)
     {
       turning = 45;
-      randTurn = Math.floor((Math.random() * 1000) + 1);
+      randTurn = Math.floor((Math.random() * 10000) + 1);
       direction *= -1;
     }
     if (turning > 0)
     {
-      exportRoot.hero.rotation -= 4;
+      hero.rotation -= 4;
       turning --;
     }
     randTurn --;
@@ -105,13 +107,13 @@ function mouseDown(e) {
   bullet.vel = 10; 
   if (direction == 1)
   {
-    bullet.x =  exportRoot.hero.x +60;
-    bullet.y = exportRoot.hero.y +3;
+    bullet.x =  hero.x +60;
+    bullet.y = hero.y +3;
   }
   else
   {
-    bullet.x =  exportRoot.hero.x -60;
-    bullet.y = exportRoot.hero.y -3;
+    bullet.x =  hero.x -60;
+    bullet.y = hero.y -3;
   }
   bullet.rad = 5;
   bullets.push(bullet);
@@ -127,6 +129,12 @@ function resetGame()
   scoreMod = 0;
   meteors = [];
   speed = 1;
+  shield = false; 
+  time = false; 
+  powerMove = false; 
+  powerUp = null; 
+  power = exportRoot.power; 
+  reset(power); 
 }
 
 function addMeteors()
@@ -180,8 +188,16 @@ function moveMeteors()
   for (var i=meteors.length-1; i>=0; i--) 
   { 
     meteor = meteors[i]; 
-    meteor.x -= meteor.vel * direction; 
-    meteor.rotation += meteor.vel/2; 
+    if (time)
+    {
+      meteor.x -= (meteor.vel * direction)/2; 
+      meteor.rotation += meteor.vel/4; 
+    }
+    else
+    {
+      meteor.x -= meteor.vel * direction; 
+      meteor.rotation += meteor.vel/2; 
+    }
     if (direction == 1)
     {
       if (meteor.x < -100)
@@ -197,6 +213,10 @@ function moveMeteors()
       }
     }
   } 
+  if (checkCollide(hero,meteor) && !shield  )
+  {
+    
+  }
 } 
 
 function moveBullets()
@@ -246,6 +266,56 @@ function remove(item, items)
    exportRoot.removeChild(item);
 }
 
+function powerUps()
+{ 
+  if(Math.random() < 0.1 && powerMove==false && time == false && shield == false )
+  { 
+    powerMove=true; 
+    powerUp = Math.round(Math.random()*2); 
+    power.gotoAndStop(powerUp); 
+    power.rad = 15;
+  } 
+  if(powerMove)
+  { 
+    power.x -= 10 * direction; 
+    power.rotation += 5; 
+    if (power.x < -100)
+    { 
+      reset(power); 
+      powerMove = false; 
+    } 
+    if (checkCollide(hero, power))
+    {
+      powerMove = false;
+      switch (powerUp)
+      {
+        case 0:
+          score += 20;
+          break;
+        case 1:
+          setTimeout(slowTime,15000); 
+          time = true;
+          break;
+        case 2:        
+          setTimeout(shieldTime,15000); 
+          shield = true; 
+          exportRoot.hero.gotoAndPlay("shield"); 
+          break;
+      }
+      reset(power);
+    }
+  } 
+} 
+
+function slowTime()
+{ 
+  time=false; 
+} 
+function shieldTime()
+{ 
+  shield=false; 
+  exportRoot.hero.gotoAndPlay("fly"); 
+} 
 
 
 

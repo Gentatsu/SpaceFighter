@@ -51,7 +51,7 @@ lib.properties = {
 	this.text_1.setTransform(792,0);
 
 	this.power = new lib.power();
-	this.power.setTransform(824,499);
+	this.power.setTransform(822,498);
 
 	this.meteor3 = new lib.meteor3();
 	this.meteor3.setTransform(825,433);
@@ -153,7 +153,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,32,32);
 
 	// detail
 	this.instance = new lib.gem();
-	this.instance.setTransform(-20,-15);
+	this.instance.setTransform(-17,-15);
 
 	this.instance_1 = new lib.shield();
 	this.instance_1.setTransform(-19.8,-16.5);
@@ -168,7 +168,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,32,32);
 	this.timeline.addTween(cjs.Tween.get(this.instance_2).wait(1).to({_off:false},0).to({_off:true},1).wait(1));
 
 }).prototype = p = new cjs.MovieClip();
-p.nominalBounds = new cjs.Rectangle(-20,-15,31,30);
+p.nominalBounds = new cjs.Rectangle(-17,-15,31,30);
 
 
 (lib.meteor3 = function() {
