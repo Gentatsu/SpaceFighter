@@ -43,12 +43,12 @@ lib.properties = {
 	this.score.name = "score";
 	this.score.lineHeight = 22;
 	this.score.lineWidth = 63;
-	this.score.setTransform(758,141.3);
+	this.score.setTransform(855,0);
 
 	this.text_1 = new cjs.Text("Score: ", "20px 'Times New Roman'", "#D2E0E6");
 	this.text_1.lineHeight = 22;
 	this.text_1.lineWidth = 63;
-	this.text_1.setTransform(698,141.3);
+	this.text_1.setTransform(792,0);
 
 	this.power = new lib.power();
 	this.power.setTransform(824,499);
@@ -57,7 +57,7 @@ lib.properties = {
 	this.meteor3.setTransform(825,433);
 
 	this.meteor2 = new lib.meteor2();
-	this.meteor2.setTransform(857,367,1,1,0,0,0,28,30);
+	this.meteor2.setTransform(827,341);
 
 	this.meteor1 = new lib.meteor1();
 	this.meteor1.setTransform(832,223);
@@ -193,11 +193,11 @@ p.nominalBounds = new cjs.Rectangle(-10,-10,18,18);
 
 	// Layer 1
 	this.instance = new lib.rock2();
-	this.instance.setTransform(-20,-20);
+	this.instance.setTransform(-50,-48);
 
 	this.addChild(this.instance,this.shape);
 }).prototype = p = new cjs.Container();
-p.nominalBounds = new cjs.Rectangle(-20,-20,98,96);
+p.nominalBounds = new cjs.Rectangle(-50,-48,98,96);
 
 
 (lib.meteor1 = function() {
@@ -220,7 +220,7 @@ p.nominalBounds = new cjs.Rectangle(-40,-40,89,82);
 	this.text.textAlign = "center";
 	this.text.lineHeight = 28;
 	this.text.lineWidth = 100;
-	this.text.setTransform(210,213.5);
+	this.text.setTransform(203,233.8);
 
 	this.playButton = new cjs.Text("PLAY", "26px 'Arial'", "#FFFFFF");
 	this.playButton.name = "playButton";
@@ -307,18 +307,18 @@ p.nominalBounds = new cjs.Rectangle(-10,-7,10,10);
 
 	// flames
 	this.instance = new lib.fire();
-	this.instance.setTransform(-47,31.6);
+	this.instance.setTransform(-57,4.6);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance).wait(7));
 
 	// detail
 	this.instance_1 = new lib.ship();
-	this.instance_1.setTransform(-30,-20);
+	this.instance_1.setTransform(-40,-47);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_1).wait(7));
 
 }).prototype = p = new cjs.MovieClip();
-p.nominalBounds = new cjs.Rectangle(-58.8,-20,103.8,99);
+p.nominalBounds = new cjs.Rectangle(-68.8,-47,103.8,99);
 
 })(lib = lib||{}, images = images||{}, createjs = createjs||{});
 var lib, images, createjs;

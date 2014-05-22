@@ -12,8 +12,8 @@
 
 <script>
 var canvas, stage, exportRoot;
-var score, inPlay, scoreMod;
-var meteor1X, meteor2X, meteor3X;
+var score, inPlay, scoreMod, meteors = [], speed, bullets = [], turning=0, randTurn = Math.floor((Math.random() * 1000) + 1), direction =1;
+const screenX = 1024;
 //Background image from - http://webtreats.mysitemyway.com/tileable-classic-nebula-space-patterns/
 function init() {
 	canvas = document.getElementById("canvas");
@@ -41,16 +41,17 @@ function handleComplete() {
 	endX = exportRoot.hero.x; 
   endY = exportRoot.hero.y; 
   stage.addEventListener("stagemousemove", moveHero);
-  canvas.addEventListener("click", keydown);
+  canvas.addEventListener("click", mouseDown);
   //exportRoot.playButton.addEventListener("click", playClicked);
   exportRoot.gameOver.visible = false; 
-  meteor1X = exportRoot.meteor1.x;
-  meteor2X = exportRoot.meteor2.x;
-  meteor3X = exportRoot.meteor3.x;
   exportRoot.bullet.visible = false;
   exportRoot.power.visible = false;
+  exportRoot.meteor1.visible = false;
+  exportRoot.meteor2.visible = false;
+  exportRoot.meteor3.visible = false;
   resetGame();
   inPlay = true;
+  //exportRoot.hero.rotation -=180;
 }
 
 function moveHero(evt)
@@ -65,34 +66,32 @@ function tick(event)
   {
     exportRoot.hero.x -= (exportRoot.hero.x - endX)/6; 
     exportRoot.hero.y -= (exportRoot.hero.y - endY)/6; 
-    scoreMod ++;
-    if (scoreMod % 10 == 0)
+    score ++;
+    exportRoot.score.text = Math.floor  (score / 10); 
+    addMeteors();
+    moveMeteors();
+    moveBullets();
+    checkBulletsMeteors();
+    //inPlay = false;
+    if (randTurn < 0)
     {
-      score ++;
-      exportRoot.score.text = score; 
+      turning = 45;
+      randTurn = Math.floor((Math.random() * 1000) + 1);
+      direction *= -1;
     }
-    exportRoot.meteor1.x -= 2;
-    exportRoot.meteor1.rotation -= 1;
-    exportRoot.meteor2.x -= 1; 
-    exportRoot.meteor2.rotation -= 2;
-    exportRoot.meteor3.x -= 3; 
-    exportRoot.meteor3.rotation -= 1;
-
-    if (exportRoot.bullet.visible == true)
+    if (turning > 0)
     {
-      exportRoot.bullet.x += 3;
+      exportRoot.hero.rotation -= 4;
+      turning --;
     }
-
-    //if (exportRoot.meteor1.x < exportRoot.hero.x + exportRoot.hero.width  && exportRoot.meteor1.x + exportRoot.meteor1.width  > exportRoot.hero.x || score == 10)
-    {
-    //  inPlay = false;
-    }
+    randTurn --;
   }
   else
   {
     exportRoot.gameOver.visible = true;
     
   }
+  //speed = Math.round(score/2);
   stage.update(event); 
 }
 
@@ -101,10 +100,22 @@ function playClicked(e)
   resetGame();
 }
 
-function keydown(e) {
-  exportRoot.bullet.visible = true;
-  exportRoot.bullet.x = exportRoot.hero.x +60;
-  exportRoot.bullet.y = exportRoot.hero.y +30;
+function mouseDown(e) {
+  var bullet = new lib.bullet;
+  bullet.vel = 10; 
+  if (direction == 1)
+  {
+    bullet.x =  exportRoot.hero.x +60;
+    bullet.y = exportRoot.hero.y +3;
+  }
+  else
+  {
+    bullet.x =  exportRoot.hero.x -60;
+    bullet.y = exportRoot.hero.y -3;
+  }
+  bullet.rad = 5;
+  bullets.push(bullet);
+  exportRoot.addChild(bullet); 
   stage.update(e);
 }
   
@@ -114,13 +125,132 @@ function resetGame()
   exportRoot.gameOver.visible = false; 
   score = 0;
   scoreMod = 0;
-  exportRoot.meteor1.x = meteor1X;
-  exportRoot.meteor2.x = meteor2X;
-  exportRoot.meteor3.x = meteor3X; 
+  meteors = [];
+  speed = 1;
 }
+
+function addMeteors()
+{ 
+  if (meteors.length < 10 || Math.random() < 0.01 && meteors.length < 25) 
+  { 
+    var meteor; 
+    var type = Math.round(Math.random()*2)+1; 
+    if (type == 1)
+    { 
+      meteor = new lib.meteor1(); 
+      meteor.setTransform(40,40); 
+      meteor.vel = Math.round(Math.random()*2)+(1+speed); 
+      meteor.rad = 35; 
+    } 
+    if (type == 2)
+    { 
+      meteor = new lib.meteor2(); 
+      meteor.setTransform(47,47); 
+      meteor.vel = Math.round(Math.random()*4)+(3+speed); 
+      meteor.rad = 40; 
+    } 
+    if (type == 3)
+    { 
+      meteor = new lib.meteor3(); 
+      meteor.setTransform(9,9); 
+      meteor.vel = Math.round(Math.random()*6)+(6+speed); 
+      meteor.rad = 3; 
+    } 
+    reset(meteor); 
+    meteors.push(meteor); 
+    exportRoot.addChild(meteor); 
+  } 
+} 
+
+function reset(met)
+{ 
+  met.y = Math.random()*(660+met.nominalBounds.height); 
+  if(direction == 1)
+  {
+    met.x = (Math.random()*300)+960; 
+  }
+  else
+  {
+    met.x = (Math.random()*300)-960; 
+  }
+} 
+
+function moveMeteors()
+{ 
+  for (var i=meteors.length-1; i>=0; i--) 
+  { 
+    meteor = meteors[i]; 
+    meteor.x -= meteor.vel * direction; 
+    meteor.rotation += meteor.vel/2; 
+    if (direction == 1)
+    {
+      if (meteor.x < -100)
+      { 
+        remove(meteor,meteors);
+      }
+    } 
+    else
+    {
+      if (meteor.x > 1100)
+      { 
+        remove(meteor,meteors);
+      }
+    }
+  } 
+} 
+
+function moveBullets()
+{ 
+  for (var i=bullets.length-1; i>=0; i--) 
+  { 
+    bullet = bullets[i]; 
+    bullet.x += meteor.vel * direction; 
+    if (bullet.x > 1100)
+    {
+      remove(bullet, bullets);
+    }
+  } 
+}
+
+function checkCollide(a, b)
+{
+  dx = b.x - a.x;
+  dy = b.y - a.y;
+  radii = a.rad + b.rad;
+  return ( ( dx * dx )  + ( dy * dy ) < radii * radii ) 
+}
+
+function checkBulletsMeteors()
+{
+  var bulletsToRemove = [];
+  var meteorsToRemove = [];
+  for (var i=bullets.length-1; i >= 0; i--)
+  {
+    bullet = bullets[i];
+    for (var j=meteors.length-1; j >= 0; j--)
+    {
+      meteor = meteors[j];
+      if (checkCollide(bullet,meteor))
+      {
+        remove(bullet,bullets);
+        remove(meteor, meteors);
+      }
+    }
+  }
+}
+
+function remove(item, items)
+{
+   var index = items.indexOf(item);
+   items.splice(index, 1);
+   exportRoot.removeChild(item);
+}
+
+
+
+
 </script>
 </head>
-
 <body onload="init();" style="background-color:#D4D4D4">
 	<canvas id="canvas" width="960" height="720" style="background-color:#000000"></canvas>
 </body>
