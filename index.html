@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>game</title>
+
+<script src="libs/easeljs-0.7.0.min.js"></script>
+<script src="libs/tweenjs-0.5.0.min.js"></script>
+<script src="libs/movieclip-0.7.0.min.js"></script>
+<script src="libs/preloadjs-0.4.0.min.js"></script>
+<script src="game.js"></script>
+
+<script>
+var canvas, stage, exportRoot;
+var score, inPlay, scoreMod;
+var meteor1X, meteor2X, meteor3X;
+//Background image from - http://webtreats.mysitemyway.com/tileable-classic-nebula-space-patterns/
+function init() {
+	canvas = document.getElementById("canvas");
+	images = images||{};
+
+	var loader = new createjs.LoadQueue(false);
+	loader.addEventListener("fileload", handleFileLoad);
+	loader.addEventListener("complete", handleComplete);
+	loader.loadManifest(lib.properties.manifest);
+}
+
+function handleFileLoad(evt) {
+	if (evt.item.type == "image") { images[evt.item.id] = evt.result; }
+}
+
+function handleComplete() {
+	exportRoot = new lib.game();
+
+	stage = new createjs.Stage(canvas);
+	stage.addChild(exportRoot);
+	stage.update();
+
+	createjs.Ticker.setFPS(lib.properties.fps);
+	createjs.Ticker.addEventListener("tick", tick);
+	endX = exportRoot.hero.x; 
+  endY = exportRoot.hero.y; 
+  stage.addEventListener("stagemousemove", moveHero);
+  canvas.addEventListener("click", keydown);
+  //exportRoot.playButton.addEventListener("click", playClicked);
+  exportRoot.gameOver.visible = false; 
+  meteor1X = exportRoot.meteor1.x;
+  meteor2X = exportRoot.meteor2.x;
+  meteor3X = exportRoot.meteor3.x;
+  exportRoot.bullet.visible = false;
+  exportRoot.power.visible = false;
+  resetGame();
+  inPlay = true;
+}
+
+function moveHero(evt)
+{
+  endX = evt.stageX;
+  endY = evt.stageY;
+}
+
+function tick(event)
+{ 
+  if (inPlay)
+  {
+    exportRoot.hero.x -= (exportRoot.hero.x - endX)/6; 
+    exportRoot.hero.y -= (exportRoot.hero.y - endY)/6; 
+    scoreMod ++;
+    if (scoreMod % 10 == 0)
+    {
+      score ++;
+      exportRoot.score.text = score; 
+    }
+    exportRoot.meteor1.x -= 2;
+    exportRoot.meteor1.rotation -= 1;
+    exportRoot.meteor2.x -= 1; 
+    exportRoot.meteor2.rotation -= 2;
+    exportRoot.meteor3.x -= 3; 
+    exportRoot.meteor3.rotation -= 1;
+
+    if (exportRoot.bullet.visible == true)
+    {
+      exportRoot.bullet.x += 3;
+    }
+
+    //if (exportRoot.meteor1.x < exportRoot.hero.x + exportRoot.hero.width  && exportRoot.meteor1.x + exportRoot.meteor1.width  > exportRoot.hero.x || score == 10)
+    {
+    //  inPlay = false;
+    }
+  }
+  else
+  {
+    exportRoot.gameOver.visible = true;
+    
+  }
+  stage.update(event); 
+}
+
+function playClicked(e)
+{
+  resetGame();
+}
+
+function keydown(e) {
+  exportRoot.bullet.visible = true;
+  exportRoot.bullet.x = exportRoot.hero.x +60;
+  exportRoot.bullet.y = exportRoot.hero.y +30;
+  stage.update(e);
+}
+  
+
+function resetGame()
+{
+  exportRoot.gameOver.visible = false; 
+  score = 0;
+  scoreMod = 0;
+  exportRoot.meteor1.x = meteor1X;
+  exportRoot.meteor2.x = meteor2X;
+  exportRoot.meteor3.x = meteor3X; 
+}
+</script>
+</head>
+
+<body onload="init();" style="background-color:#D4D4D4">
+	<canvas id="canvas" width="960" height="720" style="background-color:#000000"></canvas>
+</body>
+</html>

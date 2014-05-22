@@ -9,6 +9,8 @@ lib.properties = {
 	fps: 30,
 	color: "#000000",
 	manifest: [
+		{src:"images/background.jpg", id:"background"},
+		{src:"images/dot.png", id:"dot"},
 		{src:"images/flame1.png", id:"flame1"},
 		{src:"images/flame2.png", id:"flame2"},
 		{src:"images/gem.png", id:"gem"},
@@ -26,23 +28,27 @@ lib.properties = {
 	this.initialize();
 
 	// Layer 1
+	this.bullet = new lib.bullet();
+	this.bullet.setTransform(166,371,1,1,0,0,0,-5,-2);
+
 	this.text = new cjs.Text("", "20px 'TimesNewRomanPSMT'", "#0066CC");
 	this.text.lineHeight = 22;
 	this.text.lineWidth = 100;
 	this.text.setTransform(107,325.2);
 
 	this.gameOver = new lib.GameOver();
-	this.gameOver.setTransform(438,329.9,1,1,0,0,0,201,134.9);
+	this.gameOver.setTransform(458,241.5,1,1,0,0,0,201,134.9);
 
-	this.text_1 = new cjs.Text("0 ", "20px 'Times New Roman'", "#0066CC");
+	this.score = new cjs.Text("0 ", "20px 'Times New Roman'", "#D3E1E7");
+	this.score.name = "score";
+	this.score.lineHeight = 22;
+	this.score.lineWidth = 63;
+	this.score.setTransform(758,141.3);
+
+	this.text_1 = new cjs.Text("Score: ", "20px 'Times New Roman'", "#D2E0E6");
 	this.text_1.lineHeight = 22;
 	this.text_1.lineWidth = 63;
-	this.text_1.setTransform(758,141.3);
-
-	this.text_2 = new cjs.Text("Score: ", "20px 'Times New Roman'", "#0066CC");
-	this.text_2.lineHeight = 22;
-	this.text_2.lineWidth = 63;
-	this.text_2.setTransform(698,141.3);
+	this.text_1.setTransform(698,141.3);
 
 	this.power = new lib.power();
 	this.power.setTransform(824,499);
@@ -51,7 +57,7 @@ lib.properties = {
 	this.meteor3.setTransform(825,433);
 
 	this.meteor2 = new lib.meteor2();
-	this.meteor2.setTransform(829,337);
+	this.meteor2.setTransform(857,367,1,1,0,0,0,28,30);
 
 	this.meteor1 = new lib.meteor1();
 	this.meteor1.setTransform(832,223);
@@ -59,12 +65,27 @@ lib.properties = {
 	this.hero = new lib.hero();
 	this.hero.setTransform(102,342,1,1,0,0,0,-12.4,0);
 
-	this.addChild(this.hero,this.meteor1,this.meteor2,this.meteor3,this.power,this.text_2,this.text_1,this.gameOver,this.text);
+	this.instance = new lib.background();
+	this.instance.setTransform(-21,0,1,0.702);
+
+	this.addChild(this.instance,this.hero,this.meteor1,this.meteor2,this.meteor3,this.power,this.text_1,this.score,this.gameOver,this.text,this.bullet);
 }).prototype = p = new cjs.Container();
-p.nominalBounds = new cjs.Rectangle(535.6,501.3,851.4,372.8);
+p.nominalBounds = new cjs.Rectangle(459,360,1024,718.4);
 
 
 // symbols:
+(lib.background = function() {
+	this.initialize(img.background);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,1024,1024);
+
+
+(lib.dot = function() {
+	this.initialize(img.dot);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,10,10);
+
+
 (lib.flame1 = function() {
 	this.initialize(img.flame1);
 }).prototype = p = new cjs.Bitmap();
@@ -195,11 +216,18 @@ p.nominalBounds = new cjs.Rectangle(-40,-40,89,82);
 	this.initialize();
 
 	// Layer 1
-	this.text = new cjs.Text("PLAY", "26px 'Arial'", "#FFFFFF");
+	this.text = new cjs.Text("", "26px 'ArialMT'", "#0066CC");
 	this.text.textAlign = "center";
 	this.text.lineHeight = 28;
-	this.text.lineWidth = 71;
-	this.text.setTransform(202.5,233.8);
+	this.text.lineWidth = 100;
+	this.text.setTransform(210,213.5);
+
+	this.playButton = new cjs.Text("PLAY", "26px 'Arial'", "#FFFFFF");
+	this.playButton.name = "playButton";
+	this.playButton.textAlign = "center";
+	this.playButton.lineHeight = 28;
+	this.playButton.lineWidth = 71;
+	this.playButton.setTransform(202.5,233.8);
 
 	this.text_1 = new cjs.Text("GAME OVER", "62px 'Arial'", "#FFFFFF");
 	this.text_1.textAlign = "center";
@@ -215,7 +243,7 @@ p.nominalBounds = new cjs.Rectangle(-40,-40,89,82);
 	this.shape_1.graphics.f("#660000").s().p("AnFDDIAAmEIOMAAIAAGEg");
 	this.shape_1.setTransform(203.5,250);
 
-	this.addChild(this.shape_1,this.shape,this.text_1,this.text);
+	this.addChild(this.shape_1,this.shape,this.text_1,this.playButton,this.text);
 }).prototype = p = new cjs.Container();
 p.nominalBounds = new cjs.Rectangle(0,0,402,270.5);
 
@@ -234,6 +262,18 @@ p.nominalBounds = new cjs.Rectangle(0,0,402,270.5);
 
 }).prototype = p = new cjs.MovieClip();
 p.nominalBounds = new cjs.Rectangle(-11.8,-10,35,14);
+
+
+(lib.bullet = function() {
+	this.initialize();
+
+	// Layer 2
+	this.instance = new lib.dot();
+	this.instance.setTransform(-10,-7);
+
+	this.addChild(this.instance);
+}).prototype = p = new cjs.Container();
+p.nominalBounds = new cjs.Rectangle(-10,-7,10,10);
 
 
 (lib.hero = function(mode,startPosition,loop) {
