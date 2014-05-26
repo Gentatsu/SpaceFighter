@@ -10,6 +10,11 @@ lib.properties = {
 	color: "#000000",
 	manifest: [
 		{src:"images/background.jpg", id:"background"},
+		{src:"images/boss1.png", id:"boss1"},
+		{src:"images/boss2.png", id:"boss2"},
+		{src:"images/boss3.png", id:"boss3"},
+		{src:"images/boss4.png", id:"boss4"},
+		{src:"images/boss5.png", id:"boss5"},
 		{src:"images/dot.png", id:"dot"},
 		{src:"images/flame1.png", id:"flame1"},
 		{src:"images/flame2.png", id:"flame2"},
@@ -28,13 +33,36 @@ lib.properties = {
 	this.initialize();
 
 	// Layer 1
+	this.boss = new lib.boss();
+	this.boss.setTransform(825,324,1,1,0,0,0,0.5,-4.5);
+
+	this.level = new cjs.Text("1", "20px 'Times New Roman'", "#FFFFFF");
+	this.level.name = "level";
+	this.level.lineHeight = 22;
+	this.level.lineWidth = 100;
+	this.level.setTransform(464.5,5);
+
+	this.text = new cjs.Text("Level: ", "20px 'Times New Roman'", "#FFFFFF");
+	this.text.lineHeight = 22;
+	this.text.lineWidth = 100;
+	this.text.setTransform(410,5.9);
+
+	this.life = new lib.life();
+	this.life.setTransform(114.9,21);
+
+	this.text_1 = new cjs.Text("Lives: ", "20px 'Times New Roman'", "#FFFFFF");
+	this.text_1.textAlign = "center";
+	this.text_1.lineHeight = 22;
+	this.text_1.lineWidth = 96;
+	this.text_1.setTransform(43.5,5);
+
 	this.bullet = new lib.bullet();
 	this.bullet.setTransform(166,371,1,1,0,0,0,-5,-2);
 
-	this.text = new cjs.Text("", "20px 'TimesNewRomanPSMT'", "#0066CC");
-	this.text.lineHeight = 22;
-	this.text.lineWidth = 100;
-	this.text.setTransform(107,325.2);
+	this.text_2 = new cjs.Text("", "20px 'TimesNewRomanPSMT'", "#0066CC");
+	this.text_2.lineHeight = 22;
+	this.text_2.lineWidth = 100;
+	this.text_2.setTransform(107,325.2);
 
 	this.gameOver = new lib.GameOver();
 	this.gameOver.setTransform(458,241.5,1,1,0,0,0,201,134.9);
@@ -43,12 +71,12 @@ lib.properties = {
 	this.score.name = "score";
 	this.score.lineHeight = 22;
 	this.score.lineWidth = 63;
-	this.score.setTransform(855,0);
+	this.score.setTransform(911,5);
 
-	this.text_1 = new cjs.Text("Score: ", "20px 'Times New Roman'", "#D2E0E6");
-	this.text_1.lineHeight = 22;
-	this.text_1.lineWidth = 63;
-	this.text_1.setTransform(792,0);
+	this.text_3 = new cjs.Text("Score: ", "20px 'Times New Roman'", "#D2E0E6");
+	this.text_3.lineHeight = 22;
+	this.text_3.lineWidth = 63;
+	this.text_3.setTransform(848,5);
 
 	this.power = new lib.power();
 	this.power.setTransform(822,498);
@@ -65,12 +93,12 @@ lib.properties = {
 	this.hero = new lib.hero();
 	this.hero.setTransform(102,342,1,1,0,0,0,-12.4,0);
 
-	this.instance = new lib.background();
-	this.instance.setTransform(-21,0,1,0.702);
+	this.background = new lib.background_1();
+	this.background.setTransform(466,512,1,1,0,0,0,-4,-7);
 
-	this.addChild(this.instance,this.hero,this.meteor1,this.meteor2,this.meteor3,this.power,this.text_1,this.score,this.gameOver,this.text,this.bullet);
+	this.addChild(this.background,this.hero,this.meteor1,this.meteor2,this.meteor3,this.power,this.text_3,this.score,this.gameOver,this.text_2,this.bullet,this.text_1,this.life,this.text,this.level,this.boss);
 }).prototype = p = new cjs.Container();
-p.nominalBounds = new cjs.Rectangle(459,360,1024,718.4);
+p.nominalBounds = new cjs.Rectangle(434,360,1024,1024);
 
 
 // symbols:
@@ -78,6 +106,36 @@ p.nominalBounds = new cjs.Rectangle(459,360,1024,718.4);
 	this.initialize(img.background);
 }).prototype = p = new cjs.Bitmap();
 p.nominalBounds = new cjs.Rectangle(0,0,1024,1024);
+
+
+(lib.boss1 = function() {
+	this.initialize(img.boss1);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,165,165);
+
+
+(lib.boss2 = function() {
+	this.initialize(img.boss2);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,153,153);
+
+
+(lib.boss3 = function() {
+	this.initialize(img.boss3);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,142,142);
+
+
+(lib.boss4 = function() {
+	this.initialize(img.boss4);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,168,168);
+
+
+(lib.boss5 = function() {
+	this.initialize(img.boss5);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,134,134);
 
 
 (lib.dot = function() {
@@ -216,24 +274,25 @@ p.nominalBounds = new cjs.Rectangle(-40,-40,89,82);
 	this.initialize();
 
 	// Layer 1
-	this.text = new cjs.Text("", "26px 'ArialMT'", "#0066CC");
-	this.text.textAlign = "center";
-	this.text.lineHeight = 28;
-	this.text.lineWidth = 100;
-	this.text.setTransform(203,233.8);
-
-	this.playButton = new cjs.Text("PLAY", "26px 'Arial'", "#FFFFFF");
+	this.playButton = new cjs.Text("", "26px 'Arial'", "#0066CC");
 	this.playButton.name = "playButton";
 	this.playButton.textAlign = "center";
 	this.playButton.lineHeight = 28;
-	this.playButton.lineWidth = 71;
-	this.playButton.setTransform(202.5,233.8);
+	this.playButton.lineWidth = 100;
+	this.playButton.setTransform(203,233.8);
 
-	this.text_1 = new cjs.Text("GAME OVER", "62px 'Arial'", "#FFFFFF");
-	this.text_1.textAlign = "center";
-	this.text_1.lineHeight = 64;
-	this.text_1.lineWidth = 398;
-	this.text_1.setTransform(199,0);
+	this.playButton_1 = new cjs.Text("PLAY", "26px 'Arial'", "#FFFFFF");
+	this.playButton_1.name = "playButton_1";
+	this.playButton_1.textAlign = "center";
+	this.playButton_1.lineHeight = 28;
+	this.playButton_1.lineWidth = 71;
+	this.playButton_1.setTransform(202.5,233.8);
+
+	this.text = new cjs.Text("GAME OVER", "62px 'Arial'", "#FFFFFF");
+	this.text.textAlign = "center";
+	this.text.lineHeight = 64;
+	this.text.lineWidth = 398;
+	this.text.setTransform(199,0);
 
 	this.shape = new cjs.Shape();
 	this.shape.graphics.f().s("#FFFFFF").ss(1,1,1).p("AnGjCIONAAIAAGFIuNAAg");
@@ -243,7 +302,7 @@ p.nominalBounds = new cjs.Rectangle(-40,-40,89,82);
 	this.shape_1.graphics.f("#660000").s().p("AnFDDIAAmEIOMAAIAAGEg");
 	this.shape_1.setTransform(203.5,250);
 
-	this.addChild(this.shape_1,this.shape,this.text_1,this.playButton,this.text);
+	this.addChild(this.shape_1,this.shape,this.text,this.playButton_1,this.playButton);
 }).prototype = p = new cjs.Container();
 p.nominalBounds = new cjs.Rectangle(0,0,402,270.5);
 
@@ -276,8 +335,103 @@ p.nominalBounds = new cjs.Rectangle(-11.8,-10,35,14);
 p.nominalBounds = new cjs.Rectangle(-10,-7,10,10);
 
 
-(lib.hero = function(mode,startPosition,loop) {
+(lib.boss = function(mode,startPosition,loop) {
+	this.initialize(mode,startPosition,loop,{});
+
+	// timeline functions:
+	this.frame_0 = function() {
+		this.stop();
+	}
+
+	// actions tween:
+	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(5));
+
+	// main
+	this.instance = new lib.boss2();
+	this.instance.setTransform(-76,-81,1.046,1.046);
+
+	this.instance_1 = new lib.boss1();
+	this.instance_1.setTransform(-73,-83,0.97,0.97);
+
+	this.instance_2 = new lib.boss3();
+	this.instance_2.setTransform(-61,-74,1.127,1.127);
+
+	this.instance_3 = new lib.boss5();
+	this.instance_3.setTransform(-69,-70,1.194,1.194);
+
+	this.text = new cjs.Text("", "20px 'TimesNewRomanPSMT'");
+	this.text.lineHeight = 22;
+	this.text.lineWidth = 100;
+	this.text.setTransform(69,53.2);
+
+	this.instance_4 = new lib.boss4();
+	this.instance_4.setTransform(-83.5,-84,0.952,0.952);
+
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance}]}).to({state:[{t:this.instance_1}]},1).to({state:[{t:this.instance_2}]},1).to({state:[{t:this.text},{t:this.instance_3}]},1).to({state:[{t:this.instance_4}]},1).wait(1));
+
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-76,-81,160,160);
+
+
+(lib.background_1 = function() {
+	this.initialize();
+
+	// Layer 1
+	this.instance = new lib.background();
+	this.instance.setTransform(-516,-519);
+
+	this.addChild(this.instance);
+}).prototype = p = new cjs.Container();
+p.nominalBounds = new cjs.Rectangle(-516,-519,1024,1024);
+
+
+(lib.life = function(mode,startPosition,loop) {
 	this.initialize(mode,startPosition,loop,{fly:0,shield:1});
+
+	// timeline functions:
+	this.frame_0 = function() {
+		this.stop();
+	}
+	this.frame_6 = function() {
+		this.gotoAndPlay("shield");
+	}
+
+	// actions tween:
+	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(6).call(this.frame_6).wait(1));
+
+	// shield
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f().s("#FE9900").ss(2.5,0,0,4).p("AF7AAQAACdhvBvQhvBvidAAQicAAhvhvQhvhvAAidQAAicBvhvQBvhvCcAAQCdAABvBvQBvBvAACcg");
+	this.shape.setTransform(0,-0.2);
+
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f().s("#FFFF00").ss(2.5,0,0,4).p("AF7AAQAACdhvBvQhvBvidAAQicAAhvhvQhvhvAAidQAAicBvhvQBvhvCcAAQCdAABvBvQBvBvAACcg");
+	this.shape_1.setTransform(0,-0.2);
+
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f().s("#33FF99").ss(2.5,0,0,4).p("AF7AAQAACdhvBvQhvBvidAAQicAAhvhvQhvhvAAidQAAicBvhvQBvhvCcAAQCdAABvBvQBvBvAACcg");
+	this.shape_2.setTransform(0,-0.2);
+
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape}]},1).to({state:[{t:this.shape_1}]},2).to({state:[{t:this.shape_2}]},2).wait(2));
+
+	// flames
+	this.instance = new lib.fire();
+	this.instance.setTransform(-34,-0.7,0.32,0.297);
+
+	this.timeline.addTween(cjs.Tween.get(this.instance).wait(7));
+
+	// detail
+	this.instance_1 = new lib.ship();
+	this.instance_1.setTransform(-28.6,-16,0.294,0.273);
+
+	this.timeline.addTween(cjs.Tween.get(this.instance_1).wait(7));
+
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-37.8,-16,31.2,27);
+
+
+(lib.hero = function(mode,startPosition,loop) {
+	this.initialize(mode,startPosition,loop,{"fly":0,"shield":1});
 
 	// timeline functions:
 	this.frame_0 = function() {
