@@ -8,6 +8,7 @@
 <script src="libs/tweenjs-0.5.0.min.js"></script>
 <script src="libs/movieclip-0.7.0.min.js"></script>
 <script src="libs/preloadjs-0.4.0.min.js"></script>
+<script src="libs/keymaster.js"></script>
 <script src="game.js"></script>
 
 <script>
@@ -16,6 +17,8 @@ var score, inPlay, meteors = [], speed, bullets = [], lives = [];
 var level, boss, bossPrize, enemiesLeft, bossLevel; 
 var shield, time, power, powerMove, powerUp;
 var background1, background2;
+var highScore = 0; globalHighScore = 0;
+var pause = false, pauseDelay = 0;
 
 var hero;
 const screenX = 1024;
@@ -63,7 +66,12 @@ function handleComplete() {
   exportRoot.meteor3.visible = false;
   exportRoot.boss.visible = false;
   exportRoot.life.visible = false;
+  exportRoot.totalHp.visible = false;
+  exportRoot.currentHp.visible = false;
+  exportRoot.pause.visible = false;
   resetGame();
+  highScore = localStorage.getItem("highScore");
+  exportRoot.highscore.text = highScore;
   inPlay = true;
 }
 
@@ -77,45 +85,79 @@ function tick(event)
 { 
   if (inPlay)
   {
-    hero.x -= (hero.x - endX)/6; 
-    hero.y -= (hero.y - endY)/6; 
-    score ++;
-    exportRoot.score.text = Math.floor(score / 10); 
-    exportRoot.level.text = level;
-    if (!bossLevel)
+    if (pauseDelay <= 0)
     {
-      addMeteors();
-      moveMeteors();
-      checkBulletsMeteors();
+      if (key.isPressed("p"))
+      {
+        pauseDelay = 10;
+        pause = !pause;
+        if (pause)
+        {
+          exportRoot.pause.visible = true;
+          canvas.removeEventListener("click", mouseDown);
+        }
+        else
+        {
+          exportRoot.pause.visible = false;
+          canvas.addEventListener("click", mouseDown);
+        }
+      }
     }
-    else
+    pauseDelay --;
+    if(!pause)
     {
-      moveBoss();
-      checkBossCollide();
-    }
-    moveBullets();
-    powerUps();
-    moveBackground(background2);
-    moveBackground(background1);
-    if (enemiesLeft < 1)
-    {
-      for (i=meteors.length-1; i>=0; i--)
-      { 
-        var meteor = meteors[i];
-        exportRoot.removeChild(meteor);
-      } 
-      meteors = [];
-      boss = new lib.boss();
-      boss.hp = level * 10;
-      boss.totalHp = level * 10;
-      boss.x = 824;
-      boss.y = 328;
-      boss.rad = 80;
-      var bossType = level % 5; 
-      boss.gotoAndStop(bossType);
-      exportRoot.addChild(boss);
-      bossLevel= true;
-      enemiesLeft = 20;
+      hero.x -= (hero.x - endX)/6; 
+      hero.y -= (hero.y - endY)/6; 
+      score ++;
+      var actualScore = Math.floor(score / 10);
+      exportRoot.score.text = actualScore; 
+      exportRoot.level.text = level;
+      if (actualScore > highScore)
+      {
+        highScore = actualScore;
+        exportRoot.highscore.text = highScore;
+        localStorage.setItem("highScore", highScore);
+      }
+      if (!bossLevel)
+      {
+        addMeteors();
+        moveMeteors();
+        checkBulletsMeteors();
+      }
+      else
+      {
+        moveBoss();
+        checkBossCollide();
+      }
+      moveBullets();
+      powerUps();
+      moveBackground(background2);
+      moveBackground(background1);
+      if (enemiesLeft < 1)
+      {
+        for (i=meteors.length-1; i>=0; i--)
+        { 
+          var meteor = meteors[i];
+          exportRoot.removeChild(meteor);
+        } 
+        meteors = [];
+        boss = new lib.boss();
+        boss.hp = level * 10;
+        boss.totalHp = level * 10;
+        boss.x = 824;
+        boss.y = 328;
+        boss.rad = 80;
+        boss.totalHpImage = new lib.totalHp();
+        boss.currentHpImage = new lib.currentHp();
+        exportRoot.addChild(boss.totalHpImage);
+        exportRoot.addChild(boss.currentHpImage);
+        bossPrize = 2000 + (200 * (level -1));
+        var bossType = level % 5; 
+        boss.gotoAndStop(bossType);
+        exportRoot.addChild(boss);
+        bossLevel= true;
+        enemiesLeft = 20;
+      }
     }
     stage.update(event);
   }
@@ -158,6 +200,8 @@ function gameOver(){
     exportRoot.removeChild(bullet); 
   } 
   exportRoot.gameOver.visible = true; 
+  localStorage.setItem("highScore", highScore);
+  canvas.removeEventListener("click", mouseDown);
 }
 
 function mouseDown(e) {
@@ -178,6 +222,7 @@ function mouseDown(e) {
 function resetGame()
 {
   exportRoot.gameOver.visible = false; 
+  canvas.addEventListener("click", mouseDown);
   score = 0;
   meteors = [];
   bullets = [];
@@ -339,7 +384,16 @@ function checkBulletsMeteors()
           meteors.push(newMeteor1); 
           exportRoot.addChild(newMeteor1);
           meteors.push(newMeteor2); 
-          exportRoot.addChild(newMeteor2);  
+          exportRoot.addChild(newMeteor2);
+          score += 30;  
+        }
+        if (meteor.type == 1)
+        {
+          score += 50;
+        }
+        else
+        {
+          score += 100;
         }
         remove(meteor,meteors);
         remove(bullet,bullets);
@@ -415,10 +469,16 @@ function checkBossCollide()
     if (checkCollide(bullet, boss))
     {
       boss.hp --;
+      //(boss.totalHpImage.nominalBounds.width) *
+      var hp =  -(boss.hp / boss.totalHp);
+      console.log(hp);
+      boss.currentHpImage.scaleX = hp;
       remove(bullet,bullets);
       if (boss.hp < 1)
       {
         exportRoot.removeChild(boss);
+        exportRoot.removeChild(boss.totalHpImage);
+        exportRoot.removeChild(boss.currentHpImage);
         score += bossPrize;
         level ++;
         enemiesLeft = 15*level;
@@ -440,6 +500,8 @@ function checkBossCollide()
     else
     {
       exportRoot.removeChild(boss);
+      exportRoot.removeChild(boss.totalHpImage);
+      exportRoot.removeChild(boss.currentHpImage);
       gameOver();
     }
   }
@@ -460,6 +522,10 @@ function moveBoss()
   {
     bossy = -bossy;
   }
+  boss.totalHpImage.x = boss.x;
+  boss.totalHpImage.y = boss.y - 100;
+  boss.currentHpImage.x = boss.x;
+  boss.currentHpImage.y = boss.y - 100;
 }
 
 
